@@ -1,12 +1,13 @@
-import Amenities from "@/components/Amenities";
-import CommunityHighlights from "@/components/CommunityHighlights";
-import Contact from "@/components/Contact";
-import Features from "@/components/Featues";
-import Footer from "@/components/Footer";
-import Hero from "@/components/Hero";
-import LifeAtGokuldham from "@/components/LifeAtGokuldham";
-import Nav from "@/components/Nav";
-import Testimonials from "@/components/Testimonials";
+import Amenities from "@/components/home/Amenities";
+import CommunityHighlights from "@/components/home/CommunityHighlights";
+import Contact from "@/components/home/Contact";
+import Features from "@/components/home/Featues";
+import Footer from "@/components/home/Footer";
+import Hero from "@/components/home/Hero";
+import LifeAtGokuldham from "@/components/home/LifeAtGokuldham";
+import Nav from "@/components/home/Nav";
+import Notices from "@/components/home/Notices";
+import Testimonials from "@/components/home/Testimonials";
 
 const Home = () => {
 
@@ -18,6 +19,7 @@ const Home = () => {
       <LifeAtGokuldham />
       <Amenities />
       <CommunityHighlights />
+      <Notices />
       <Testimonials />
       <Contact />
       <Footer />

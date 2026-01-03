@@ -7,10 +7,10 @@ const Nav = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const menuItems = [
-        { name: 'Features', href: '#features' },
-        { name: 'Services', href: '#services' },
-        { name: 'Amenities', href: '#amenities' },
-        { name: 'Contact', href: '#contact' },
+        { name: 'Features', href: '/#features' },
+        { name: 'Services', href: '/#services' },
+        { name: 'Amenities', href: '/#amenities' },
+        { name: 'Contact', href: '/#contact' },
     ]
 
     return (
@@ -19,15 +19,17 @@ const Nav = () => {
                 <div className="flex justify-between items-center h-16 max-w-7xl mx-auto">
                     {/* Logo */}
                     <div className="flex items-center">
-                        <h1 className="text-xl sm:text-2xl font-bold text-blue-600">Gokuldham Society</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold text-blue-600">
+                            <Link href="/">Gokuldham Society</Link>
+                        </h1>
                     </div>
 
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex space-x-8">
                         {menuItems.map((item) => (
-                            <a key={item.name} href={item.href} className="text-gray-700 hover:text-blue-600 transition">
+                            <Link key={item.name} href={item.href} className="text-gray-700 hover:text-blue-600 transition">
                                 {item.name}
-                            </a>
+                            </Link>
                         ))}
                     </div>
 
