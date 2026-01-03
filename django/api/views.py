@@ -64,3 +64,14 @@ def contact_api(request):
         
         return JsonResponse(response)
 
+    elif request.method == "GET":
+
+        contacts = list(contactForm.objects.all().values())
+        print(type(contacts))
+
+        return JsonResponse(contacts, safe=False)
+
+        
+
+        
+
