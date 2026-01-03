@@ -3,10 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Local environment and secrets
-.env
-db.sqlite3
-db.sqlite3-journal
+
 
 # Virtual environments
 venv/
