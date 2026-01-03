@@ -19,7 +19,18 @@ def members_api(request):
 
         cleaned_data = json.loads(raw_data)
        
-        print(cleaned_data["full_name"])
+        print(cleaned_data["name"])
+        title = data["title"]
+       
+        if title:
+
+            task = TaskDb.objects.create(task=title)
+            tasklist = {
+                "id": task.id,
+                "task": task.task
+                }
+            print(type(tasklist))
+            return JsonResponse(tasklist)
 
         return JsonResponse(10, safe=False)
     
