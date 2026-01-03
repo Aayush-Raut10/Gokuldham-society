@@ -9,9 +9,12 @@ const Contact = () => {
         name: '',
         email: '',
         message: ''
-    });
+    })
 
-    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState({
+        type: '',
+        content: ''
+    });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,11 +34,10 @@ const Contact = () => {
         const res = await submitForm(formData, '/api/contact');
 
         if (res.success) {
-            alert(res.message);
             setFormData({ name: '', email: '', message: '' });
-            setError(null);
+            setMessage({ type: 'success', content: res.message });
         } else {
-            setError(res.message);
+            setMessage({ type: 'error', content: res.message });
         }
         setIsSubmitting(false);
     }
@@ -120,7 +122,14 @@ const Contact = () => {
                                 />
                             </div>
 
-                            {error && <p className="text-red-500 text-sm">{error}</p>}
+                            {
+                                message &&
+                                <p className={`text-sm ${message.type === 'error' ?
+                                    'text-red-800' :
+                                    'text-green-800'}`}>
+                                    {message.content}
+                                </p>
+                            }
 
                             <button
                                 disabled={isSubmitting}
