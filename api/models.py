@@ -14,3 +14,10 @@ class memberDb(models.Model):
     def __str__(self):
         return self.full_name
 
+class contactForm(models.Model):
+    name = models.CharField(max_length=64)
+    email = models.EmailField(max_length=64)
+    message = models.CharField(max_length=500)
+
+    def __str__(self):
+        return self.name
