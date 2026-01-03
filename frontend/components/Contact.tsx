@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { submitForm } from "@/services/submitForm";
 
 const Contact = () => {
@@ -17,6 +17,15 @@ const Contact = () => {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (message.content) {
+            const timer = setTimeout(() => {
+                setMessage({ type: '', content: '' });
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
