@@ -9,6 +9,7 @@ interface ResidentFormData {
     contactNumber: string;
     email: string;
     isActive: string;
+    age: string;
 }
 
 const AddResidents = () => {
@@ -17,7 +18,8 @@ const AddResidents = () => {
         flatNumber: '',
         contactNumber: '',
         email: '',
-        isActive: 'yes'
+        isActive: 'yes',
+        age: ''
     };
 
     const {
@@ -114,6 +116,15 @@ const AddResidents = () => {
                         options={activeOptions}
                         required
                         className="md:col-span-1"
+                    />
+
+                    <FormField
+                        label="Age"
+                        name="age"
+                        value={values.age}
+                        onChange={handleChange}
+                        placeholder="Enter age"
+                        required
                     />
                 </div>
 
