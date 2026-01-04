@@ -1,4 +1,4 @@
-from  api.models import memberDb, contactForm
+from  api.models import memberDb, contactForm, UserDb
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -6,6 +6,8 @@ import sqlite3
 from api.models import UserDb
 from django.core.mail import send_mail
 from backend import settings
+import random 
+import string
 
 @csrf_exempt
 def member_list_create(request):
@@ -44,12 +46,19 @@ def member_list_create(request):
 
        
         if fullname and flatid and phone and age and email:
-            
+
             member = memberDb.objects.create(full_name=fullname, flat_id = flatid, phone=phone, age=age, email=email)
-            
+
+            chars = string.ascii_letters + string.digits
+            password = ''.join(random.choices(chars, k=6))
+
+            newUser = UserDb.objects.create(username=member.email, password=password)
+
+            print(password)
+
             send_mail(
                 subject="Welcome to Gokuldhan society",
-                message="Your are now member of Gokuldham society",
+                message=f"Your are now member of Gokuldham society\nYour username: {member.email}\nPassword:{password}",
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[member.email],
                 fail_silently=False
@@ -59,6 +68,7 @@ def member_list_create(request):
             response = {
                 'status':'success',
                 'message':'member details saved successfully',
+                'email_status':'sent',
             }
 
             return JsonResponse(response, safe=False)
@@ -191,7 +201,6 @@ def user_register(request):
         username = data.get("username")
         password = data.get("password")
 
-        newUser = UserDb.objects.create(username=username, password=password)
 
         return JsonResponse({
             'status':'success',
