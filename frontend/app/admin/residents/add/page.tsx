@@ -2,6 +2,7 @@
 import AdminLayout from '@/components/admin/AdminLayout'
 import Link from 'next/link'
 import { useForm, FormMessage, PageHeader, FormField, SelectField } from '@/components/common'
+import { submitForm } from '@/services/submitForm';
 
 interface ResidentFormData {
     fullName: string;
@@ -32,11 +33,17 @@ const AddResidents = () => {
     } = useForm({
         initialValues,
         onSubmit: async (formData) => {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Form Data:', formData);
-            // In real app, make API call here
-            throw new Error('This would be your API call');
+           
+            const data = {
+                "fullname": formData.fullName,
+                "flatid": formData.flatNumber,
+                "phone": formData.contactNumber,
+                "email": formData.email,
+                "age": parseInt(formData.age, 10)
+            }
+
+            const res = await submitForm(data, '/api/members');
+            console.log('Form submission response:', res);
         },
         onSuccess: () => {
             // Custom success handling if needed
