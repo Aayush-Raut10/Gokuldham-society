@@ -2,6 +2,10 @@ from  api.models import memberDb, contactForm
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import sqlite3
+from api.models import UserDb
+from django.core.mail import send_mail
+from backend import settings
 
 @csrf_exempt
 def member_list_create(request):
@@ -34,14 +38,24 @@ def member_list_create(request):
 
         fullname = cleaned_data.get("fullname")
         flatid = cleaned_data.get("flatid")
-        contact = cleaned_data.get("contact")
+        phone = cleaned_data.get("phone")
         age = cleaned_data.get("age")
+        email = cleaned_data.get("email")
 
        
-        if fullname and flatid and contact and age:
-
-            member = memberDb.objects.create(full_name=fullname, flat_id = flatid, contact=contact, age=age)
+        if fullname and flatid and phone and age and email:
             
+            member = memberDb.objects.create(full_name=fullname, flat_id = flatid, phone=phone, age=age, email=email)
+            
+            send_mail(
+                subject="Welcome to Gokuldhan society",
+                message="Your are now member of Gokuldham society",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[member.email],
+                fail_silently=False
+            )
+
+
             response = {
                 'status':'success',
                 'message':'member details saved successfully',
@@ -84,8 +98,9 @@ def member_detail(request, id):
             "id":member.id,
             "fullname": member.full_name,
             "flatid":member.flat_id,
-            "contact": member.contact,
+            "phone": member.phone,
             "age": member.age,
+            "email":member.email
         }
         return JsonResponse(response)
     
@@ -101,8 +116,9 @@ def member_detail(request, id):
 
         member.full_name = data.get("fullname",member.full_name)
         member.flat_id = data.get("flatid",member.flat_id)
-        member.contact = data.get("contact",member.contact)
+        member.phone = data.get("contact",member.phone)
         member.age = data.get("age",member.age)
+        member.email = data.get("email", member.email)
 
         member.save()
 
@@ -165,7 +181,35 @@ def contact_api(request):
 
         return JsonResponse(contacts, safe=False)
 
-        
+@csrf_exempt
+def user_register(request):
+    
+    if request.method == "POST":
 
+        data = json.loads(request.body)
+
+        username = data.get("username")
+        password = data.get("password")
+
+        newUser = UserDb.objects.create(username=username, password=password)
+
+        return JsonResponse({
+            'status':'success',
+        })
+
+    else:
+        return JsonResponse({'error':'Method not allowed'})
+
+    # Use a context manager for automatic closing 
+    with sqlite3.connect("example.db") as conn:
+        cursor = conn.cursor()
         
+       
+        # Fetching data
+        cursor.execute("SELECT * FROM users")
+        print(cursor.fetchall())
+
+    
+
+
 

@@ -5,8 +5,9 @@ from django.db import models
 class memberDb(models.Model):
     full_name = models.CharField(max_length=64)
     flat_id = models.IntegerField()
-    contact = models.CharField(max_length=10)
+    phone = models.CharField(max_length=10)
     age = models.IntegerField()
+    email = models.CharField(max_length=64)
     joined_date = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -21,3 +22,11 @@ class contactForm(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UserDb(models.Model):
+    username = models.CharField(max_length=64)
+    password = models.CharField()
+
+    def __str__(self):
+        return self.username
