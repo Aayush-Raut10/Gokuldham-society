@@ -1,0 +1,140 @@
+'use client'
+import AdminLayout from '@/components/admin/AdminLayout'
+import Link from 'next/link'
+import { useForm, FormMessage, PageHeader, FormField, SelectField } from '@/components/common'
+
+interface ResidentFormData {
+    fullName: string;
+    flatNumber: string;
+    contactNumber: string;
+    email: string;
+    isActive: string;
+}
+
+const AddResidents = () => {
+    const initialValues: ResidentFormData = {
+        fullName: '',
+        flatNumber: '',
+        contactNumber: '',
+        email: '',
+        isActive: 'yes'
+    };
+
+    const {
+        values,
+        handleChange,
+        handleSubmit,
+        isLoading,
+        message,
+        clearMessage
+    } = useForm({
+        initialValues,
+        onSubmit: async (formData) => {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Form Data:', formData);
+            // In real app, make API call here
+            throw new Error('This would be your API call');
+        },
+        onSuccess: () => {
+            // Custom success handling if needed
+        },
+        onError: (error) => {
+            console.error('Form submission error:', error);
+        }
+    });
+
+    const activeOptions = [
+        { value: 'yes', label: 'Active' },
+        { value: 'no', label: 'Inactive' }
+    ];
+
+    return (
+        <AdminLayout>
+            <PageHeader
+                title="Add New Resident"
+                description="Register a new resident in the society"
+                backUrl="/admin/residents"
+                backText="Back to Residents"
+            />
+
+            {message && (
+                <FormMessage
+                    type={message.type}
+                    message={message.text}
+                    onDismiss={clearMessage}
+                />
+            )}
+
+            <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg border border-gray-200 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                        label="Full Name"
+                        name="fullName"
+                        value={values.fullName}
+                        onChange={handleChange}
+                        placeholder="Enter full name"
+                        required
+                    />
+
+                    <FormField
+                        label="Flat Number"
+                        name="flatNumber"
+                        value={values.flatNumber}
+                        onChange={handleChange}
+                        placeholder="Enter flat number (e.g., A-101)"
+                        required
+                    />
+
+                    <FormField
+                        label="Contact Number"
+                        name="contactNumber"
+                        type="tel"
+                        value={values.contactNumber}
+                        onChange={handleChange}
+                        placeholder="Enter contact number"
+                        required
+                    />
+
+                    <FormField
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        value={values.email}
+                        onChange={handleChange}
+                        placeholder="Enter email address"
+                        required
+                    />
+
+                    <SelectField
+                        label="Status"
+                        name="isActive"
+                        value={values.isActive}
+                        onChange={handleChange}
+                        options={activeOptions}
+                        required
+                        className="md:col-span-1"
+                    />
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? 'Adding Resident...' : 'Add Resident'}
+                    </button>
+                    <Link
+                        href="/admin/residents"
+                        className="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors font-medium"
+                    >
+                        Cancel
+                    </Link>
+                </div>
+            </form>
+        </AdminLayout>
+    )
+}
+
+export default AddResidents

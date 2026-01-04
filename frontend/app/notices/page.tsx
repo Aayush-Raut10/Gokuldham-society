@@ -1,6 +1,6 @@
-import Footer from '@/components/home/Footer';
-import Nav from '@/components/home/Nav';
-import NoticeCard from '@/components/home/NoticeCard';
+import Footer from '@/components/home/Footer'
+import Nav from '@/components/home/Nav'
+import NoticeCard from '@/components/home/NoticeCard'
 
 const NoticePage = () => {
 
@@ -26,7 +26,7 @@ const NoticePage = () => {
             link: "#",
             date: "2024-06-25",
         }
-    ];
+    ]
 
     return (
         <>

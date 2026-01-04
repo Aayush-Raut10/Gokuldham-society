@@ -1,12 +1,12 @@
 import Footer from '@/components/home/Footer'
 import Nav from '@/components/home/Nav'
-import Image from 'next/image';
+import Image from 'next/image'
 
 const NoticeDetails = async ({ params }: { params: Promise<{ id: string }> }) => {
     
-    const id = await params.then(p => p.id);
+    const id = await params.then(p => p.id)
     
-    console.log("Notice ID:", id);
+    console.log("Notice ID:", id)
 
     return (
         <>
