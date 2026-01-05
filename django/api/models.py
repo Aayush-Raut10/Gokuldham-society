@@ -30,3 +30,15 @@ class UserDb(models.Model):
 
     def __str__(self):
         return self.username
+    
+
+class NoticesDb(models.Model):
+
+    class NoticeType(models.TextChoices):
+        public = 'PUB', 'public'
+        private = 'PRI', 'private'
+
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
+    type = models.CharField(max_length=3, choices = NoticeType.choices, default=NoticeType.private)
+    image_url = models.URLField()

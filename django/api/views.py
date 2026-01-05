@@ -44,6 +44,8 @@ def member_list_create(request):
         age = cleaned_data.get("age")
         email = cleaned_data.get("email")
 
+        print(type(age))
+
        
         if fullname and flatid and phone and age and email:
 
