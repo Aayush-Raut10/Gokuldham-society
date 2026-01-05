@@ -42,3 +42,6 @@ class NoticesDb(models.Model):
     description = models.CharField(max_length=500)
     type = models.CharField(max_length=3, choices = NoticeType.choices, default=NoticeType.private)
     image_url = models.URLField()
+
+    def __str__(self):
+        return self.title

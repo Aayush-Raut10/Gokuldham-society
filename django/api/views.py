@@ -1,4 +1,4 @@
-from  api.models import memberDb, contactForm, UserDb
+from  api.models import memberDb, contactForm, UserDb, NoticesDb
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -211,14 +211,33 @@ def user_register(request):
     else:
         return JsonResponse({'error':'Method not allowed'})
 
-    # Use a context manager for automatic closing 
-    with sqlite3.connect("example.db") as conn:
-        cursor = conn.cursor()
+
+@csrf_exempt
+def notice_api(request):
+    if request.method == "GET":
+
+        notices = NoticesDb.objects.all().values()
+        return JsonResponse(list(notices), safe=False)
+    
+    elif request.method == "POST":
         
-       
-        # Fetching data
-        cursor.execute("SELECT * FROM users")
-        print(cursor.fetchall())
+        data = json.loads(request.body)
+        
+        title = data.get("title")
+        description = data.get("description")
+        noticetype = data.get("notice_type")
+        imageurl = data.get("image")
+
+        newNotice = NoticesDb.objects.create(title=title, description=description, type=noticetype, image_url = imageurl)
+        
+        return JsonResponse({
+            'status':'success',
+            'message':'notice created'
+        })
+    
+    else:
+        return JsonResponse({"error":"Method not allowed"})
+
 
     
 
