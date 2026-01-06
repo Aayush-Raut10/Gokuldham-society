@@ -1,4 +1,4 @@
-from  api.models import memberDb, contactForm, UserDb, NoticesDb
+from  api.models import memberDb, contactForm, UserDb, NoticesDb, FlatData
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from backend import settings
 import random 
 import string
+
 
 @csrf_exempt
 def member_list_create(request):
@@ -19,44 +20,39 @@ def member_list_create(request):
     if request.method == "GET":
     
         members = memberDb.objects.all().values()
-
-        print(type(members))
-
         members = list(members)
-        print(members)
+
         return JsonResponse(members, safe=False)
     
 
     elif request.method == "POST":
 
         raw_data = request.body
-        print(type(raw_data))
-        print(raw_data)
-
         cleaned_data = json.loads(raw_data)
-       
-        # print(cleaned_data.get("fullname"))
-        # print(cleaned_data.get("flatid"))
 
         fullname = cleaned_data.get("fullname")
-        flatid = cleaned_data.get("flatid")
+        flatid = str(cleaned_data.get("flatid"))
         phone = cleaned_data.get("phone")
         age = cleaned_data.get("age")
         email = cleaned_data.get("email")
 
-        print(type(age))
+        try:
+            flat = FlatData.objects.get(flat_id=flatid)
+        except FlatData.DoesNotExist:
+            return JsonResponse({'error':'Flat does not exist'}, status=400)
+        
+        if memberDb.objects.filter(flat_id=flat).exists():
+            return JsonResponse({'error':'Flat already assigned'},status = 400)
 
        
         if fullname and flatid and phone and age and email:
 
-            member = memberDb.objects.create(full_name=fullname, flat_id = flatid, phone=phone, age=age, email=email)
+            member = memberDb.objects.create(full_name=fullname, flat_id = flat, phone=phone, age=age, email=email)
 
             chars = string.ascii_letters + string.digits
             password = ''.join(random.choices(chars, k=6))
 
             newUser = UserDb.objects.create(username=member.email, password=password)
-
-            print(password)
 
             send_mail(
                 subject="Welcome to Gokuldhan society",
@@ -109,7 +105,7 @@ def member_detail(request, id):
         response = {
             "id":member.id,
             "fullname": member.full_name,
-            "flatid":member.flat_id,
+            "flatid":member.flat_id.flat_id,
             "phone": member.phone,
             "age": member.age,
             "email":member.email
@@ -124,13 +120,29 @@ def member_detail(request, id):
     
         except memberDb.DoesNotExist:
             return JsonResponse({'error':'member not exists'}, status = 404)
+        
         data = json.loads(request.body)
 
+       
+
         member.full_name = data.get("fullname",member.full_name)
-        member.flat_id = data.get("flatid",member.flat_id)
         member.phone = data.get("contact",member.phone)
         member.age = data.get("age",member.age)
         member.email = data.get("email", member.email)
+
+        new_flatid = str(data.get("flatid"))
+
+        if new_flatid:
+            try:
+                new_flat = FlatData.objects.get(flat_id=new_flatid)
+            except FlatData.DoesNotExist:
+                return JsonResponse({'error':'Flat does not exist'}, status=400)
+        
+        if memberDb.objects.filter(flat_id=new_flat).exists():
+            return JsonResponse({'error':'Flat already assigned'},status = 400)
+
+        # Assign the new flat object i.e updating flat id if it is provided
+        member.flat_id = new_flat
 
         member.save()
 

@@ -2,18 +2,25 @@ from django.db import models
 
 # Create your models here.
 
+class FlatData(models.Model):
+    flat_id = models.CharField(max_length=10, primary_key=True)
+
+    def __str__(self):
+        return self.flat_id
+
 class memberDb(models.Model):
     full_name = models.CharField(max_length=64)
-    flat_id = models.IntegerField()
+    flat_id = models.OneToOneField(FlatData, on_delete=models.PROTECT)
     phone = models.CharField(max_length=10)
-    age = models.IntegerField()
-    email = models.CharField(max_length=64)
+    age = models.PositiveIntegerField()
+    email = models.EmailField(max_length=255)
     joined_date = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
 
     def __str__(self):
         return self.full_name
+
 
 class contactForm(models.Model):
     name = models.CharField(max_length=64)
