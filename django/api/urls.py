@@ -7,5 +7,6 @@ urlpatterns = [
     path('members/<int:id>', views.member_detail, name="member-detail-update-delete"),
     path('contacts', views.contact_api, name="contact-api"),
     path('users', views.user_register, name="user-register-api"),
-    path('notices', views.notice_api, name="notice-api")
+    path('notices', views.notice_api, name="notice-api"),
+    path('flats', views.flat_api, name="flat-api"),
 ]

@@ -249,6 +249,36 @@ def notice_api(request):
     
     else:
         return JsonResponse({"error":"Method not allowed"})
+    
+
+@csrf_exempt
+def flat_api(request):
+    if request.method == "GET":
+
+        flats = FlatData.objects.all().values()
+        return JsonResponse(list(flats), safe=False)
+    
+    elif request.method == "POST":
+
+        data = json.loads(request.body)
+
+        flatid = str(data.get("flatid"))
+
+        if FlatData.objects.filter(flat_id = flatid).exists():
+            return JsonResponse({'error':'Flat already exits'},status = 400)
+
+        else:
+            newflat  = FlatData.objects.create(flat_id = flatid)
+
+            return JsonResponse({
+                'status':'success',
+                'message':'Flat added successfully'
+            })
+
+    else:
+        return JsonResponse({'error':'Method not allowed'})
+    
+
 
 
     
