@@ -8,6 +8,9 @@ from django.core.mail import send_mail
 from backend import settings
 import random 
 import string
+import datetime
+from django.core.files.storage import FileSystemStorage
+import os
 
 
 @csrf_exempt
@@ -233,14 +236,26 @@ def notice_api(request):
     
     elif request.method == "POST":
         
-        data = json.loads(request.body)
-        
-        title = data.get("title")
-        description = data.get("description")
-        noticetype = data.get("notice_type")
-        imageurl = data.get("image")
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        noticetype = request.POST.get("notice_type")
+       
+        image = request.FILES.get("image")
 
-        newNotice = NoticesDb.objects.create(title=title, description=description, type=noticetype, image_url = imageurl)
+        if not image:
+            return JsonResponse({"error": "Image not provided"}, status=400)
+        
+        time = str(datetime.datetime.now())
+        filename = title.replace(" ", "").lower() + time.replace(" ", "").replace("-", "_").replace(":","_")  + ".png"
+
+        fs = FileSystemStorage(location=settings.MEDIA_ROOT)
+        saved_name = fs.save(filename, image)
+
+        
+        imgurl = request.build_absolute_uri(settings.MEDIA_URL + saved_name)
+        print(imgurl)
+
+        newNotice = NoticesDb.objects.create(title=title, description=description, type=noticetype, image_url = imgurl)
         
         return JsonResponse({
             'status':'success',
