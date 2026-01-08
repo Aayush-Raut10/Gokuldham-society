@@ -9,7 +9,7 @@ const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_API || 'http://localhost:800
 interface Resident {
     id: number
     full_name: string
-    flat_id: string
+    flat_id_id: string
     phone: string
     email: string
     age: number
@@ -46,7 +46,7 @@ const Residents = () => {
         const query = searchQuery.toLowerCase().trim()
         return allResidents?.filter(resident =>
             resident.full_name.toLowerCase().includes(query) ||
-            resident.flat_id.toString().toLowerCase().includes(query) ||
+            resident.flat_id_id.toString().toLowerCase().includes(query) ||
             resident.phone.includes(query) ||
             resident.age.toString().toLowerCase().includes(query) ||
             resident.joined_date.toLowerCase().includes(query) ||
@@ -158,7 +158,7 @@ const Residents = () => {
                                     {filteredResidents!.map((resident) => (
                                         <tr key={resident.id} className="hover:bg-gray-50">
                                             <td className="py-3 px-4 text-sm text-gray-900 font-medium">{resident.full_name}</td>
-                                            <td className="py-3 px-4 text-sm text-gray-900">{resident.flat_id}</td>
+                                            <td className="py-3 px-4 text-sm text-gray-900">{resident.flat_id_id}</td>
                                             <td className="py-3 px-4 text-sm text-gray-900">{resident.phone}</td>
                                             <td className="py-3 px-4 text-sm text-gray-900">{resident.age}</td>
                                             <td className="py-3 px-4 text-sm text-gray-900">{resident.email}</td>

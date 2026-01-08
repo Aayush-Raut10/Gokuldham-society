@@ -78,7 +78,6 @@ const EditResident = () => {
                 if (response.success && response.data) {
                     const resident: FetchedResidentData = response.data
 
-                    console.log('Fetched resident data:', resident)
 
                     setValues({
                         fullName: resident.fullname,
