@@ -4,7 +4,7 @@ import { FormMessage, useForm } from '@/components/common'
 import { updateForm } from '@/services/httpMethods'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const EditFlat = () => {
@@ -14,6 +14,7 @@ const EditFlat = () => {
     }
 
     const params = useParams()
+    const router = useRouter()
 
     const {
         handleSubmit,
@@ -36,7 +37,7 @@ const EditFlat = () => {
             }
 
             setTimeout(() => {
-                window.location.href = '/admin/flats'
+                router.push('/admin/flats')
             }, 1500)
         },
         resetOnSubmit: false,
