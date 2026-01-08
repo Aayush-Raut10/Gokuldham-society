@@ -11,14 +11,14 @@ interface UseFormOptions<T> {
     onSuccess?: (values: T) => void
     onError?: (error: any) => void
     resetOnSubmit?: boolean
+    successMessage?: string
 }
 
 export function useForm<T extends Record<string, any>>({
     initialValues,
     onSubmit,
-    onSuccess,
-    onError,
-    resetOnSubmit = true
+    resetOnSubmit = true,
+    successMessage = 'Form submitted successfully!'
 }: UseFormOptions<T>) {
     const [values, setValues] = useState<T>(initialValues)
     const [isLoading, setIsLoading] = useState(false)
@@ -56,11 +56,7 @@ export function useForm<T extends Record<string, any>>({
         try {
             await onSubmit(values)
 
-            if (onSuccess) {
-                onSuccess(values)
-            } else {
-                setMessage({ type: 'success', text: 'Form submitted successfully!' })
-            }
+            setMessage({ type: 'success', text: successMessage })
 
             if (resetOnSubmit) {
                 setValues(initialValues)
@@ -68,15 +64,12 @@ export function useForm<T extends Record<string, any>>({
         } catch (error: any) {
             const errorMessage = error?.message || 'An error occurred while submitting the form'
 
-            if (onError) {
-                onError(error)
-            } else {
-                setMessage({ type: 'error', text: errorMessage })
-            }
+            setMessage({ type: 'error', text: errorMessage })
+
         } finally {
             setIsLoading(false)
         }
-    }, [values, onSubmit, onSuccess, onError, resetOnSubmit, initialValues])
+    }, [values, onSubmit, resetOnSubmit, initialValues])
 
     const reset = useCallback(() => {
         setValues(initialValues)

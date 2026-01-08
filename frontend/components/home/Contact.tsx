@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { submitForm } from "@/services/submitForm";
+import { submitForm } from "@/services/httpMethods";
 
 const Contact = () => {
 

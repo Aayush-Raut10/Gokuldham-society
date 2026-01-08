@@ -2,10 +2,17 @@
 import AdminLayout from '@/components/admin/AdminLayout'
 import Link from 'next/link'
 import { useForm, FormMessage, PageHeader, FormField, SelectField } from '@/components/common'
-import { fetchData, submitForm } from '@/services/httpMethods';
-import { useEffect, useState } from 'react';
+import { updateForm, fetchData } from '@/services/httpMethods'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-const AddResidents = () => {
+const EditResident = () => {
+    const params = useParams()
+    const router = useRouter()
+    const [isLoadingData, setIsLoadingData] = useState(true)
+    const [dataError, setDataError] = useState<string | null>(null)
+    const [flats, setFlats] = useState<Array<{ value: string; label: string }>>([])
+
     const initialValues: ResidentFormData = {
         fullName: '',
         flatNumber: '',
@@ -13,22 +20,7 @@ const AddResidents = () => {
         email: '',
         isActive: 'yes',
         age: ''
-    };
-
-    const [flats, setFlats] = useState<Array<{ value: string; label: string }>>([]);
-
-    useEffect(() => {
-        const resPromise = fetchData('/api/flats');
-        resPromise.then(response => {
-            if (response.success && response.data) {
-                const flatOptions = response.data.map((flat: { flatid: string }) => ({
-                    value: flat.flatid,
-                    label: flat.flatid
-                }));
-                setFlats(flatOptions);
-            }
-        });
-    }, []);
+    }
 
     const {
         values,
@@ -36,7 +28,8 @@ const AddResidents = () => {
         handleSubmit,
         isLoading,
         message,
-        clearMessage
+        clearMessage,
+        setValues
     } = useForm({
         initialValues,
         onSubmit: async (formData) => {
@@ -48,30 +41,112 @@ const AddResidents = () => {
                 "age": parseInt(formData.age, 10)
             }
 
-            const res = await submitForm(data, '/api/members');
+            const res = await updateForm(data, `/api/members/${params.id}`)
 
             if (!res.success) {
-                throw new Error(res.message || 'Failed to add resident');
+                throw new Error(res.message || 'Failed to update resident')
             }
 
             setTimeout(() => {
-                window.location.href = '/admin/residents';
-            }, 2000);
+                router.push('/admin/residents')
+            }, 2000)
         },
         resetOnSubmit: false,
-        successMessage: 'Resident added successfully! Redirecting to residents list...'
-    });
+        successMessage: 'Resident updated successfully! Redirecting to residents list...'
+    })
+
+    useEffect(() => {
+
+        const resPromise = fetchData('/api/flats')
+        resPromise.then(response => {
+            if (response.success && response.data) {
+                const flatOptions = response.data.map((flat: { flatid: string }) => ({
+                    value: flat.flatid,
+                    label: flat.flatid
+                }))
+                setFlats(flatOptions)
+            }
+        })
+
+        const loadResidentData = async () => {
+            setIsLoadingData(true)
+            setDataError(null)
+
+            try {
+                const response = await fetchData(`/api/members/${params.id}`)
+
+                if (response.success && response.data) {
+                    const resident: FetchedResidentData = response.data
+
+                    console.log('Fetched resident data:', resident)
+
+                    setValues({
+                        fullName: resident.fullname,
+                        flatNumber: resident.flatid,
+                        contactNumber: resident.phone,
+                        email: resident.email,
+                        isActive: resident.is_active ? 'yes' : 'no',
+                        age: resident.age.toString()
+                    })
+                } else {
+                    setDataError(response.message || 'Failed to load resident data')
+                }
+            } catch (error) {
+                setDataError('Error loading resident data')
+            } finally {
+                setIsLoadingData(false)
+            }
+        }
+
+        if (params.id) {
+            loadResidentData()
+        }
+    }, [params.id, setValues])
 
     const activeOptions = [
         { value: 'yes', label: 'Active' },
         { value: 'no', label: 'Inactive' }
-    ];
+    ]
+
+    if (isLoadingData) {
+        return (
+            <AdminLayout>
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-lg">Loading resident data...</div>
+                </div>
+            </AdminLayout>
+        )
+    }
+
+    if (dataError) {
+        return (
+            <AdminLayout>
+                <PageHeader
+                    title="Edit Resident"
+                    description="Unable to load resident data"
+                    backUrl="/admin/residents"
+                    backText="Back to Residents"
+                />
+                <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                    <div className="text-red-800">
+                        <strong>Error:</strong> {dataError}
+                    </div>
+                    <Link
+                        href="/admin/residents"
+                        className="inline-block mt-2 text-red-600 hover:text-red-800 underline"
+                    >
+                        Return to Residents List
+                    </Link>
+                </div>
+            </AdminLayout>
+        )
+    }
 
     return (
         <AdminLayout>
             <PageHeader
-                title="Add New Resident"
-                description="Register a new resident in the society"
+                title="Edit Resident"
+                description="Update resident information in the society"
                 backUrl="/admin/residents"
                 backText="Back to Residents"
             />
@@ -97,8 +172,8 @@ const AddResidents = () => {
 
                     <FormField
                         label="Flat Number"
-                        type="select"
                         name="flatNumber"
+                        type="select"
                         options={[
                             ...flats
                         ]}
@@ -154,7 +229,7 @@ const AddResidents = () => {
                         disabled={isLoading}
                         className="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isLoading ? 'Adding Resident...' : 'Add Resident'}
+                        {isLoading ? 'Updating Resident...' : 'Update Resident'}
                     </button>
                     <Link
                         href="/admin/residents"
@@ -168,4 +243,4 @@ const AddResidents = () => {
     )
 }
 
-export default AddResidents
+export default EditResident

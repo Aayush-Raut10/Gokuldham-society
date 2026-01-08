@@ -3,9 +3,10 @@ import React from 'react'
 interface FormFieldProps {
     label: string;
     name: string;
-    type?: 'text' | 'email' | 'tel' | 'password' | 'number';
+    type?: 'text' | 'email' | 'tel' | 'password' | 'number' | 'select';
+    options?: { value: string; label: string }[]; // for select type
     value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     placeholder?: string;
     required?: boolean;
     error?: string;
@@ -17,6 +18,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     label,
     name,
     type = 'text',
+    options = [],
     value,
     onChange,
     placeholder,
@@ -31,20 +33,45 @@ export const FormField: React.FC<FormFieldProps> = ({
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            <input
-                id={name}
-                name={name}
-                type={type}
-                value={value}
-                onChange={onChange}
-                placeholder={placeholder}
-                required={required}
-                disabled={disabled}
-                className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors ${error
-                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300'
-                    } ${disabled ? 'bg-gray-50 cursor-not-allowed' : ''}`}
-            />
+
+            {
+                type === 'select' ? (
+                    <select
+                        id={name}
+                        name={name}
+                        onChange={onChange}
+                        required={required}
+                        defaultValue={value}
+                        disabled={disabled}
+                        className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors ${error
+                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                            : 'border-gray-300'
+                            } ${disabled ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                    >
+                        <option value="">{placeholder || 'Select an option'}</option>
+                        {options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <input
+                        id={name}
+                        name={name}
+                        type={type}
+                        value={value}
+                        onChange={onChange}
+                        placeholder={placeholder}
+                        required={required}
+                        disabled={disabled}
+                        className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors ${error
+                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                            : 'border-gray-300'
+                            } ${disabled ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                    />
+                )
+            }
             {error && (
                 <p className="mt-1 text-sm text-red-600">{error}</p>
             )}
@@ -98,8 +125,8 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
                 rows={rows}
                 maxLength={maxLength}
                 className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none ${error
-                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300'
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300'
                     } ${disabled ? 'bg-gray-50 cursor-not-allowed' : ''}`}
             />
             {showCount && maxLength && (
@@ -153,8 +180,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
                 required={required}
                 disabled={disabled}
                 className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors ${error
-                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300'
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300'
                     } ${disabled ? 'bg-gray-50 cursor-not-allowed' : ''}`}
             >
                 <option value="">{placeholder}</option>
