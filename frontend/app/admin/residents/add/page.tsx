@@ -2,8 +2,8 @@
 import AdminLayout from '@/components/admin/AdminLayout'
 import Link from 'next/link'
 import { useForm, FormMessage, PageHeader, FormField, SelectField } from '@/components/common'
-import { fetchData, submitForm } from '@/services/httpMethods';
-import { useEffect, useState } from 'react';
+import { fetchData, submitForm } from '@/services/httpMethods'
+import { useEffect, useState } from 'react'
 
 const AddResidents = () => {
     const initialValues: ResidentFormData = {
@@ -13,22 +13,22 @@ const AddResidents = () => {
         email: '',
         isActive: 'yes',
         age: ''
-    };
+    }
 
-    const [flats, setFlats] = useState<Array<{ value: string; label: string }>>([]);
-
+    const [flats, setFlats] = useState<Array<{ value: string; label: string }>>([])
+        
     useEffect(() => {
-        const resPromise = fetchData('/api/flats');
+        const resPromise = fetchData('/api/flats')
         resPromise.then(response => {
             if (response.success && response.data) {
                 const flatOptions = response.data.map((flat: { flat_id: string }) => ({
                     value: flat.flat_id,
                     label: flat.flat_id
-                }));
-                setFlats(flatOptions);
+                }))
+                setFlats(flatOptions)
             }
-        });
-    }, []);
+        })
+    }, [])
 
     const {
         values,
@@ -48,24 +48,20 @@ const AddResidents = () => {
                 "age": parseInt(formData.age, 10)
             }
 
-            const res = await submitForm(data, '/api/members');
+            const res = await submitForm(data, '/api/members')
 
             if (!res.success) {
-                throw new Error(res.message || 'Failed to add resident');
+                throw new Error(res.message || 'Failed to add resident')
             }
-
-            setTimeout(() => {
-                window.location.href = '/admin/residents';
-            }, 2000);
         },
         resetOnSubmit: false,
-        successMessage: 'Resident added successfully! Redirecting to residents list...'
-    });
+        successMessage: 'Resident added successfully!'
+    })
 
     const activeOptions = [
         { value: 'yes', label: 'Active' },
         { value: 'no', label: 'Inactive' }
-    ];
+    ]
 
     return (
         <AdminLayout>

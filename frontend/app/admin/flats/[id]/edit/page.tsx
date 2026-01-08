@@ -1,19 +1,24 @@
 'use client'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { FormMessage, useForm } from '@/components/common'
-import { submitForm } from '@/services/httpMethods'
+import { updateForm } from '@/services/httpMethods'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useEffect } from 'react'
 
-const AddFlat = () => {
+const EditFlat = () => {
 
     const initialValues = {
         flatNumber: ''
     }
 
+    const params = useParams()
+
     const {
         handleSubmit,
         values,
+        setValues,
         handleChange,
         isLoading,
         message,
@@ -24,15 +29,25 @@ const AddFlat = () => {
             const payload = {
                 "flatid": data.flatNumber
             }
-            const res = await submitForm(payload, '/api/flats')
+            const res = await updateForm(payload, `/api/flats/${params.id}`)
 
             if (!res.success) {
                 throw new Error(res.message || 'Failed to add flat')
             }
+
+            setTimeout(() => {
+                window.location.href = '/admin/flats'
+            }, 1500)
         },
         resetOnSubmit: false,
-        successMessage: 'Flat added successfully!'
+        successMessage: 'Flat updated successfully! Redirecting...'
     })
+
+    // should fetch from API to get existing flat data and populate the form
+    // but for now, just set the flat number from params
+    useEffect(() => {
+        setValues({ flatNumber: params.id as string })
+    }, [params.id, setValues])
 
     return (
         <AdminLayout>
@@ -45,8 +60,8 @@ const AddFlat = () => {
                     Back to Flats
                 </Link>
                 <div>
-                    <h1 className='font-bold text-2xl text-gray-900'>Add New Flat</h1>
-                    <p className='text-gray-600 mt-1'>Create a new flat for the community</p>
+                    <h1 className='font-bold text-2xl text-gray-900'>Update Flat</h1>
+                    <p className='text-gray-600 mt-1'>Update the flat information</p>
                 </div>
             </div>
 
@@ -84,7 +99,7 @@ const AddFlat = () => {
                         type="submit"
                         className="bg-primary text-white px-6 py-2 rounded-md hover:bg-primary-700 transition-colors font-medium"
                     >
-                        {isLoading ? 'Adding...' : 'Add Flat'}
+                        {isLoading ? 'Updating...' : 'Update Flat'}
                     </button>
                     <Link
                         href="/admin/flats"
@@ -98,4 +113,4 @@ const AddFlat = () => {
     )
 }
 
-export default AddFlat
+export default EditFlat

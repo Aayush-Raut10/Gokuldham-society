@@ -84,4 +84,27 @@ const fetchData = async (endpoint: string): Promise<ApiResponse> => {
     }
 }
 
-export { submitForm, updateForm, fetchData };
+const deleteData = async (endpoint: string): Promise<ApiResponse> => {
+    try {
+        const response = await fetch(ENDPOINT + endpoint, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return {
+            success: true,
+            message: 'Data deleted successfully',
+        }
+    } catch (error) {
+        return {
+            success: false,
+            message: (error as Error).message,
+        }
+    }
+}
+
+export { submitForm, updateForm, fetchData, deleteData };

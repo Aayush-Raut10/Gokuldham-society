@@ -1,14 +1,37 @@
+'use client'
 import AdminLayout from '@/components/admin/AdminLayout'
+import { deleteData, fetchData } from '@/services/httpMethods'
 import { Delete, Edit } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 const Flats = () => {
 
-    const flats = [
-        { id: 1, flatNumber: 'A-101' },
-        { id: 2, flatNumber: 'A-102' },
-        { id: 3, flatNumber: 'B-201' },
-    ]
+    const [flats, setFlats] = useState<{ flat_id: string }[]>([])
+
+    useEffect(() => {
+        const getFlats = async () => {
+            const response = await fetchData('/api/flats')
+            if (response.success && response.data) {
+                setFlats(response.data)
+                console.log('Flats data:', response.data)
+            }
+        }
+        getFlats()
+    }, [])
+
+
+    const handleDelete = async (flatId: string) => {
+        if (!confirm('Are you sure you want to delete this flat?')) {
+            return
+        }
+
+        const message = await deleteData(`/api/flats/${flatId}`)
+        if (message.success) {
+            const updatedData = flats.filter(item => item.flat_id !== flatId)
+            setFlats(updatedData)
+        }
+    }
 
     return (
         <AdminLayout>
@@ -40,18 +63,22 @@ const Flats = () => {
                             </thead>
 
                             <tbody>
-                                {flats.map((flat) => (
-                                    <tr key={flat.id} className="border-b border-gray-100 last:border-b-0">
-                                        <td className="py-3 px-4 text-gray-800">{flat.flatNumber}</td>
+                                {flats.map((flat: { flat_id: string }) => (
+                                    <tr key={flat.flat_id} className="border-b border-gray-100 last:border-b-0">
+                                        <td className="py-3 px-4 text-gray-800">{flat.flat_id}</td>
                                         <td className="py-3 px-4">
                                             <Link
-                                                href={`/admin/flats/${flat.id}/edit`}
+                                                href={`/admin/flats/${flat.flat_id}/edit`}
                                                 aria-label='edit'
                                                 className="text-primary hover:text-primary-700 font-medium"
                                             >
                                                 <Edit className="w-4 h-4 inline-block mr-1" />
                                             </Link>
-                                            <button aria-label='delete' className="ml-4 cursor-pointer text-red-600 hover:text-red-800 font-medium">
+                                            <button
+                                                onClick={() => handleDelete(flat.flat_id)}
+                                                aria-label='delete'
+                                                className="ml-4 cursor-pointer text-red-600 hover:text-red-800 font-medium"
+                                            >
                                                 <Delete className="w-5 h-5 inline-block mr-1" />
                                             </button>
                                         </td>
