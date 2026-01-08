@@ -60,9 +60,9 @@ const EditResident = () => {
         const resPromise = fetchData('/api/flats')
         resPromise.then(response => {
             if (response.success && response.data) {
-                const flatOptions = response.data.map((flat: { flatid: string }) => ({
-                    value: flat.flatid,
-                    label: flat.flatid
+                const flatOptions = response.data.map((flat: { flat_id: string }) => ({
+                    value: flat.flat_id,
+                    label: flat.flat_id
                 }))
                 setFlats(flatOptions)
             }
