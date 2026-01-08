@@ -6,14 +6,31 @@ interface ApiResponse {
     data?: any;
 }
 
-const submitForm = async (formData: Record<string, any>, endpoint: string): Promise<ApiResponse> => {
+const submitForm = async (formData: Record<string, any> | FormData, endpoint: string, type?: 'json' | 'form'): Promise<ApiResponse> => {
     try {
+        let body: BodyInit;
+        const headers: Record<string, string> = {};
+
+        if (formData instanceof FormData) {
+            // If it's already FormData, use it directly
+            body = formData;
+        } else if (type && type === 'json') {
+            body = JSON.stringify(formData);
+            headers['Content-Type'] = 'application/json';
+        } else {
+            const form = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                form.append(key, value);
+            });
+            body = form;
+        }
+
+        console.log('Submitting to:', formData);
+
         const response = await fetch(ENDPOINT + endpoint, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
+            headers,
+            body,
         });
         if (!response.ok) {
             throw new Error('Network response was not ok');

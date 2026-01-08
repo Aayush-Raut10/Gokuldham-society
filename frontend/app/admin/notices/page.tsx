@@ -1,8 +1,9 @@
 'use client'
 import AdminLayout from '@/components/admin/AdminLayout'
+import { fetchData } from '@/services/httpMethods'
 import { Delete, Edit, Eye, Search, Calendar, Globe, Lock } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 interface Notice {
     id: number
@@ -15,58 +16,24 @@ interface Notice {
 
 const Notices = () => {
     const [searchQuery, setSearchQuery] = useState('')
+    const [allNotices, setAllNotices] = useState<Notice[]>()
 
-    // Mock notices data (simulating database fetch)
-    const allNotices: Notice[] = [
-        {
-            id: 1,
-            title: 'Monthly Maintenance Payment Due',
-            description: 'Please pay your monthly maintenance fee by the 15th of this month.',
-            type: 'public',
-            image: '/images/maintenance.jpg',
-            createdDate: '2026-01-01',
-        },
-        {
-            id: 2,
-            title: 'Community Meeting Scheduled',
-            description: 'Annual community meeting scheduled for next week to discuss society updates.',
-            type: 'public',
-            createdDate: '2026-01-02',
-        },
-        {
-            id: 3,
-            title: 'Water Supply Interruption',
-            description: 'Water supply will be interrupted on Sunday for maintenance work.',
-            type: 'public',
-            createdDate: '2026-01-03',
-        },
-        {
-            id: 4,
-            title: 'Gym Equipment Maintenance',
-            description: 'Gym will be closed for equipment maintenance and upgrades.',
-            type: 'private',
-            createdDate: '2026-01-03',
-        },
-        {
-            id: 5,
-            title: 'New Year Celebration',
-            description: 'Join us for the New Year celebration in the community hall.',
-            type: 'public',
-            createdDate: '2025-12-28'
-        },
-        {
-            id: 6,
-            title: 'Security Update Notice',
-            description: 'Important security updates and new procedures for residents.',
-            type: 'private',
-            createdDate: '2026-01-04',
+    useEffect(() => {
+        const fetchNotices = async () => {
+            const res = await fetchData('/api/notices')
+            if (res.success && res.data) {
+                setAllNotices(res.data)
+            } else {
+                setAllNotices([])
+            }
         }
-    ]
+        fetchNotices()
+    }, [])
 
     // Filter notices based on search query
     const filteredNotices = useMemo(() => {
-        if (!searchQuery.trim()) {
-            return allNotices
+        if (!allNotices || !searchQuery.trim()) {
+            return allNotices || []
         }
 
         const query = searchQuery.toLowerCase().trim()
@@ -76,6 +43,16 @@ const Notices = () => {
             notice.type.toLowerCase().includes(query)
         )
     }, [searchQuery, allNotices])
+
+    if (!allNotices) {
+        return (
+            <AdminLayout>
+                <div className="text-center py-12 text-gray-500">
+                    Loading notices...
+                </div>
+            </AdminLayout>
+        )
+    }
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value)
@@ -144,7 +121,6 @@ const Notices = () => {
                                     <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Title</th>
                                     <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Description</th>
                                     <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Type</th>
-                                    <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Created</th>
                                     <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
                                 </tr>
                             </thead>
@@ -169,12 +145,6 @@ const Notices = () => {
                                                 <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getTypeBadgeColor(notice.type)}`}>
                                                     {notice.type}
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td className="py-3 px-4">
-                                            <div className="flex items-center gap-1 text-sm text-gray-900">
-                                                <Calendar className="w-4 h-4 text-gray-400" />
-                                                {formatDate(notice.createdDate)}
                                             </div>
                                         </td>
                                         <td className="py-3 px-4">

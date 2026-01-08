@@ -33,14 +33,16 @@ const AddNotice = () => {
         initialValues,
         onSubmit: async (formData) => {
             const payload = new FormData()
+
             payload.append('title', formData.title)
             payload.append('description', formData.description)
-            payload.append('type', formData.type)
+            payload.append('notice_type', formData.type)
+
             if (selectedImage) {
                 payload.append('image', selectedImage)
             }
 
-            const res = await submitForm(payload, '/api/notices')
+            const res = await submitForm(payload, '/api/notices', "form")
 
             if (!res.success) {
                 throw new Error(res.message || 'Failed to add notice')
