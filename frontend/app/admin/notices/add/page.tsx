@@ -4,6 +4,7 @@ import { Upload } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useForm, FormMessage, PageHeader, FormField, TextAreaField } from '@/components/common'
+import { submitForm } from '@/services/httpMethods'
 
 interface NoticeFormData {
     title: string
@@ -31,20 +32,24 @@ const AddNotice = () => {
     } = useForm({
         initialValues,
         onSubmit: async (formData) => {
-            // Simulate API call with image
-            await new Promise(resolve => setTimeout(resolve, 1500))
-            console.log('Form Data:', formData)
-            console.log('Selected Image:', selectedImage)
+            const payload = new FormData()
+            payload.append('title', formData.title)
+            payload.append('description', formData.description)
+            payload.append('type', formData.type)
+            if (selectedImage) {
+                payload.append('image', selectedImage)
+            }
 
-            // Reset image state on successful submission
+            const res = await submitForm(payload, '/api/notices')
+
+            if (!res.success) {
+                throw new Error(res.message || 'Failed to add notice')
+            }
+
             setSelectedImage(null)
         },
-        onSuccess: () => {
-            // Custom success message
-        },
-        onError: (error) => {
-            console.error('Notice submission error:', error)
-        }
+        resetOnSubmit: true,
+        successMessage: 'Notice added successfully!'
     })
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,13 +156,13 @@ const AddNotice = () => {
                             <Upload className="mx-auto h-12 w-12 text-gray-400" />
                             <div className="flex text-sm text-gray-600">
                                 <label
-                                    htmlFor="image-upload"
+                                    htmlFor="image"
                                     className="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary"
                                 >
                                     <span>Upload an image</span>
                                     <input
-                                        id="image-upload"
-                                        name="image-upload"
+                                        id="image"
+                                        name="image"
                                         type="file"
                                         className="sr-only"
                                         accept="image/*"
