@@ -1,5 +1,5 @@
 import React from 'react'
-import { Home, Megaphone, Users, Building, DollarSign, ClipboardList, Settings, X } from 'lucide-react'
+import { Home, Megaphone, Users, Building, DollarSign, ClipboardList, X, PersonStanding } from 'lucide-react'
 import { NavigationMenu } from './NavigationMenu'
 
 interface SidebarProps {
@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         { icon: Building, label: 'Flats', href: '/admin/flats' },
         { icon: DollarSign, label: 'Payments', href: '/admin/payments' },
         { icon: ClipboardList, label: 'Complaints', href: '/admin/complaints' },
-        { icon: Settings, label: 'Settings', href: '/admin/settings' },
+        { icon: PersonStanding, label: 'Visitor Pass', href: '/admin/visitor-pass' },
     ]
 
     return (

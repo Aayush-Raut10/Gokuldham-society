@@ -26,3 +26,23 @@ interface FetchedResidentData {
     age: number;
     is_active: boolean;
 }
+
+interface VisitorData {
+    name: string
+    phone: string
+    purpose: string
+}
+
+interface VisitorPassResponse {
+    success: boolean
+    message: string
+    data: {
+        id: number
+        name: string
+        phone: string
+        purpose: string
+        pass_number: string
+        date_issued: string
+        valid_until: string
+    }
+}
