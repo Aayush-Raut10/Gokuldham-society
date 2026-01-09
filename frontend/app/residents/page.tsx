@@ -187,7 +187,7 @@ const ResidentDashboard = () => {
                         {/* Right Column - Recent Notices */}
                         <div className="lg:col-span-2 w-full">
                             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 flex flex-col h-full">
-                                <div className="p-6 flex-shrink-0">
+                                <div className="p-6 shrink-0">
                                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                                         <span className="w-1.5 h-8 bg-linear-to-b from-blue-600 to-indigo-600 rounded-full"></span>
                                         Recent Notices
