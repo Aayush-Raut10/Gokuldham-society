@@ -1,12 +1,40 @@
+'use client'
 import Footer from '@/components/home/Footer'
 import Nav from '@/components/home/Nav'
 import Image from 'next/image'
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-const NoticeDetails = async ({ params }: { params: Promise<{ id: string }> }) => {
-    
-    const id = await params.then(p => p.id)
-    
-    console.log("Notice ID:", id)
+const NoticeDetails = () => {
+
+    const params = useParams()
+
+    const [notice, setNotice] = useState<any>(null)
+
+    useEffect(() => {
+        const result = localStorage.getItem('notice');
+        if (result) {
+            const noticeData = JSON.parse(result);
+            if (noticeData.id.toString() === params.id) {
+                setNotice(noticeData);
+            }
+        }
+
+    }, [params.id])
+
+    if (!notice) {
+        return (
+            <>
+                <Nav />
+                <div className="text-center py-12 text-gray-500">
+                    Loading notice details...
+                </div>
+                <Footer />
+            </>
+        )
+    }
+
+    console.log('Notice Details:', notice.image_url);
 
     return (
         <>
@@ -28,9 +56,18 @@ const NoticeDetails = async ({ params }: { params: Promise<{ id: string }> }) =>
             </section>
 
             <div className="my-12 max-w-7xl mx-auto">
+
+                <h1 className='font-bold text-3xl'>
+                    {notice?.title}
+                </h1>
+
+                <p className='my-4'>
+                    {notice?.description}
+                </p>
+
                 <Image
-                    src="/notice-placeholder.jpg"
-                    alt="Notice Details"
+                    src={notice.image_url}
+                    alt={notice?.title || 'Notice Details'}
                     width={800}
                     height={400}
                     className="w-full h-auto rounded-2xl shadow-lg"

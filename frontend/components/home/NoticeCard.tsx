@@ -1,5 +1,7 @@
+'use client'
 import formatDate from '@/utils/formatDate'
 import Link from 'next/link'
+import { useEffect } from 'react';
 
 type NoticeType = {
     id: number;
@@ -10,6 +12,11 @@ type NoticeType = {
 }
 
 const NoticeCard = ({ notice }: { notice: NoticeType }) => {
+
+    useEffect(() => {
+        localStorage.setItem('notice', JSON.stringify(notice));
+    }, []);
+
   return (
       <div
           key={notice.id}
@@ -37,7 +44,7 @@ const NoticeCard = ({ notice }: { notice: NoticeType }) => {
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
 
               <Link
-                  href={`/notices/${notice.link}`}
+                  href={`/notices/${notice.id}`}
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors"
               >
                   View Details

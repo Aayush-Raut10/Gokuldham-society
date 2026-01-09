@@ -1,32 +1,13 @@
 import Footer from '@/components/home/Footer'
 import Nav from '@/components/home/Nav'
 import NoticeCard from '@/components/home/NoticeCard'
+import { fetchData } from '@/services/httpMethods'
 
-const NoticePage = () => {
+const NoticePage = async () => {
 
-    const notices = [
-        {
-            id: 1,
-            title: "Maintenance Schedule Update",
-            description: "Important updates regarding building maintenance and water supply schedule.",
-            link: "#",
-            date: "2024-06-15",
-        },
-        {
-            id: 2,
-            title: "Society AGM Meeting",
-            description: "Annual General Meeting scheduled for all society members to discuss important matters.",
-            link: "#",
-            date: "2024-06-20",
-        },
-        {
-            id: 3,
-            title: "Festival Celebration",
-            description: "Join us for the upcoming festival celebration in the society garden area.",
-            link: "#",
-            date: "2024-06-25",
-        }
-    ]
+    const res = await fetchData('/api/notices')
+
+    const notices = res.success && res.data ? res.data : []
 
     return (
         <>
@@ -48,7 +29,7 @@ const NoticePage = () => {
             </section>
 
             <div className="my-12 max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {notices.map((notice) => (
+                {notices.map((notice: any) => (
                     <NoticeCard key={notice.id} notice={notice} />
                 ))}
             </div>
