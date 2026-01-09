@@ -30,14 +30,14 @@ const NoticeCard = ({ notice }: { notice: NoticeType }) => {
         >
             {/* Image Section */}
             {notice.image_url && (
-                <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
+                <div className="relative h-48 w-full overflow-hidden bg-linear-to-br from-blue-100 to-indigo-100">
                     <Image
                         src={notice.image_url}
                         alt={notice.title}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                     {/* Category Badge */}
                     {notice.category && (
@@ -61,7 +61,7 @@ const NoticeCard = ({ notice }: { notice: NoticeType }) => {
                 </div>
 
                 {/* Title */}
-                <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3.5rem]">
+                <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-14">
                     {notice.title}
                 </h4>
 
@@ -91,10 +91,10 @@ const NoticeCard = ({ notice }: { notice: NoticeType }) => {
             </div>
 
             {/* Accent Line */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-blue-600 to-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
 
             {/* Corner Badge (New/Important) */}
-            <div className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-full shadow-lg transform -rotate-3 group-hover:rotate-0 transition-transform duration-300">
+            <div className="absolute top-4 left-4 px-3 py-1 bg-linear-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-full shadow-lg transform -rotate-3 group-hover:rotate-0 transition-transform duration-300">
                 NOTICE
             </div>
         </div>
