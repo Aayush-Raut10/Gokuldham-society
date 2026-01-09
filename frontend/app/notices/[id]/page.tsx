@@ -173,6 +173,7 @@ const NoticeDetails = () => {
                             Back to All Notices
                         </button>
                     </div>
+
                 </div>
             </div>
 
