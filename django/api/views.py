@@ -231,7 +231,9 @@ def user_register(request):
 def notice_api(request):
     if request.method == "GET":
 
-        notices = NoticesDb.objects.all().values()
+        query = request.GET.get("type")
+        
+        notices = NoticesDb.objects.filter(type=query).values()
         return JsonResponse(list(notices), safe=False)
     
     elif request.method == "POST":
