@@ -21,8 +21,27 @@ const Residents = () => {
     const [searchInput, setSearchInput] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
     const [residents, setResidents] = useState<Resident[]>([])
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [hasSearched, setHasSearched] = useState(false)
+
+    // Load all members initially
+    useEffect(() => {
+        const fetchAllMembers = async () => {
+            setIsLoading(true)
+            try {
+                const response = await fetch(`${BACKEND_API}/api/members`)
+                const data = await response.json()
+                setResidents(data)
+            } catch (error) {
+                console.error('Error fetching residents:', error)
+                setResidents([])
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchAllMembers()
+    }, [])
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -30,6 +49,19 @@ const Residents = () => {
 
     const handleSearch = async () => {
         if (!searchInput.trim()) {
+            setSearchQuery('')
+            setHasSearched(false)
+            setIsLoading(true)
+            try {
+                const response = await fetch(`${BACKEND_API}/api/members`)
+                const data = await response.json()
+                setResidents(data)
+            } catch (error) {
+                console.error('Error fetching residents:', error)
+                setResidents([])
+            } finally {
+                setIsLoading(false)
+            }
             return
         }
 
@@ -114,38 +146,33 @@ const Residents = () => {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                             type="search"
-                            value={searchQuery}
+                            value={searchInput}
                             onChange={handleSearchChange}
+                            onKeyPress={handleKeyPress}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder="Search by name..."
+                            placeholder="Search by name... (Press Enter to search)"
                         />
                     </div>
-                    {searchQuery && (
+                    {searchQuery && hasSearched && (
                         <div className="mt-2 text-sm text-gray-600">
-                            {isLoading ? (
-                                <span>Searching...</span>
-                            ) : (
-                                <>
-                                    Found {residents.length} resident{residents.length !== 1 ? 's' : ''}
-                                    {searchQuery && ` matching "${searchQuery}"`}
-                                </>
-                            )}
+                            Found {residents.length} resident{residents.length !== 1 ? 's' : ''}
+                            {searchQuery && ` matching "${searchQuery}"`}
                         </div>
                     )}
                 </div>
 
                 {/* Results Table */}
                 <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    {isLoading ? (
-                        <div className="text-center py-12">
-                            <div className="text-gray-400 text-lg mb-2">Searching...</div>
-                        </div>
-                    ) : residents.length === 0 ? (
+                    {residents.length === 0 && hasSearched ? (
                         <div className="text-center py-12">
                             <div className="text-gray-400 text-lg mb-2">No residents found</div>
                             <div className="text-gray-500 text-sm">
-                                {searchQuery ? 'Try adjusting your search terms' : 'No residents registered yet'}
+                                Try adjusting your search terms
                             </div>
+                        </div>
+                    ) : residents.length === 0 ? (
+                        <div className="text-center py-12">
+                            <div className="text-gray-400 text-lg mb-2">No residents registered yet</div>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
@@ -214,9 +241,10 @@ const Residents = () => {
                 </div>
 
                 {/* Summary */}
-                {residents?.length > 0 && !searchQuery && (
+                {residents?.length > 0 && (
                     <div className="mt-4 text-sm text-gray-600">
-                        Showing {residents?.length} residents
+                        Showing {residents?.length} resident{residents.length !== 1 ? 's' : ''}
+                        {hasSearched && searchQuery && ` matching "${searchQuery}"`}
                     </div>
                 )}
             </AdminLayout>
