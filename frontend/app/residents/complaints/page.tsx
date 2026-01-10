@@ -1,47 +1,58 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Nav from '@/components/home/Nav'
 import Footer from '@/components/home/Footer'
 import Link from 'next/link'
+import { fetchData, submitForm } from '@/services/httpMethods'
 
 interface Complaint {
-    id: number
-    text: string
+    id?: number
     category: string
-    status: 'pending' | 'in-progress' | 'resolved'
-    date: string
+    description: string
+    status?: 'pending' | 'in-progress' | 'resolved'
+    date?: string
 }
 
 const Complaints = () => {
     const [complaint, setComplaint] = useState('')
     const [category, setCategory] = useState('maintenance')
-    const [complaintsList, setComplaintsList] = useState<Complaint[]>([
-        {
-            id: 1,
-            text: 'Water supply issue in the morning',
-            category: 'Utilities',
-            status: 'in-progress',
-            date: '2 days ago'
-        },
-        {
-            id: 2,
-            text: 'Lift not working on 3rd floor',
-            category: 'Maintenance',
-            status: 'resolved',
-            date: '1 week ago'
-        }
-    ])
+    const [complaintsList, setComplaintsList] = useState<Complaint[]>([])
+    const [loading, setLoading] = useState(false)
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        const newComplaint: Complaint = {
-            id: Date.now(),
-            text: complaint,
-            category: category.charAt(0).toUpperCase() + category.slice(1),
-            status: 'pending',
-            date: 'Just now'
+    useEffect(() => {
+        const getData = async () => {
+            const res = await fetchData('/api/complains')
+            if (res.success && res.data) {
+                setComplaintsList(res.data)
+                console.log(res.data)
+            }
         }
-        setComplaintsList([newComplaint, ...complaintsList])
+        getData();
+    }, [])
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        setLoading(true)
+
+        const newComplaint = {
+            id: Date.now(),
+            description: complaint,
+            category: category.charAt(0).toUpperCase() + category.slice(1),
+        }
+
+        try {
+            const res = await submitForm(newComplaint, '/api/complains')
+
+            if (res.success) {
+                setComplaintsList([newComplaint, ...complaintsList])
+            }
+        } catch (error) {
+            console.error('Error submitting complaint:', error)
+        } finally {
+            setLoading(false)
+        }
+
         setComplaint('')
         setCategory('maintenance')
     }
@@ -221,11 +232,15 @@ const Complaints = () => {
                                                     </span>
                                                     <span className="text-sm text-gray-500">{c.date}</span>
                                                 </div>
-                                                <p className="text-gray-900 font-medium mb-1">{c.text}</p>
+                                                <p className="text-gray-900 font-medium mb-1">{c.description}</p>
                                             </div>
-                                            <span className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusColor(c.status)}`}>
-                                                {c.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                                            </span>
+                                            {
+                                                c.status && (
+                                                    <span className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap ${getStatusColor(c.status)}`}>
+                                                        {c.status.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                                    </span>
+                                                )
+                                            }
                                         </div>
                                     ))}
                                 </div>

@@ -8,21 +8,22 @@ interface ApiResponse {
 
 const submitForm = async (formData: Record<string, any> | FormData, endpoint: string, type?: 'json' | 'form'): Promise<ApiResponse> => {
     try {
-        let body: BodyInit;
+        let body: BodyInit = JSON.stringify(formData);
         const headers: Record<string, string> = {};
 
-        if (formData instanceof FormData) {
-            // If it's already FormData, use it directly
-            body = formData;
-        } else if (type && type === 'json') {
+        if (!type || type === 'json') {
             body = JSON.stringify(formData);
             headers['Content-Type'] = 'application/json';
-        } else {
-            const form = new FormData();
-            Object.entries(formData).forEach(([key, value]) => {
-                form.append(key, value);
-            });
-            body = form;
+        } else if (type === 'form') {
+            if (formData instanceof FormData) {
+                body = formData;
+            } else {
+                const form = new FormData();
+                Object.entries(formData).forEach(([key, value]) => {
+                    form.append(key, value);
+                });
+                body = form;
+            }
         }
 
         console.log('Submitting to:', formData);
