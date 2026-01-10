@@ -57,6 +57,8 @@ class NoticesDb(models.Model):
 class Complain(models.Model):
         category = models.TextField(max_length=64)
         description = models.TextField(max_length=500)
+        
+        member = models.ForeignKey(memberDb, on_delete=models.CASCADE)
 
         def __str__(self):
             return self.category

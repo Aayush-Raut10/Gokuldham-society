@@ -11,6 +11,7 @@ import string
 import datetime
 from django.core.files.storage import FileSystemStorage
 import os
+from django.shortcuts import get_object_or_404
 
 
 
@@ -308,10 +309,17 @@ def complains_api(request):
 
         query = request.GET.get("id")
 
+    
         if not query:
          
             complains = Complain.objects.all().values()
             return JsonResponse(list(complains), safe=False)
+        
+        else:
+
+            member_instance = memberDb.objects.get(id=query)
+            complain = Complain.objects.filter(member=member_instance).values()
+            return JsonResponse(list(complain),safe=False)
         
 
     elif request.method == "POST":
@@ -321,7 +329,9 @@ def complains_api(request):
         category = data.get("category")
         description = data.get("description")
 
-        newcomplain = Complain.objects.create(category=category, description=description)
+        member_instance = memberDb.objects.get(id=2)
+
+        newcomplain = Complain.objects.create(category=category, description=description, member=member_instance)
 
         return JsonResponse({
                 'status':'success',
