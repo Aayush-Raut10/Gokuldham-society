@@ -232,7 +232,12 @@ def notice_api(request):
     if request.method == "GET":
 
         query = request.GET.get("type")
+
+        if not query:
+          notices = NoticesDb.objects.all().values()
+          return JsonResponse(list(notices), safe=False)
         
+
         notices = NoticesDb.objects.filter(type=query).values()
         return JsonResponse(list(notices), safe=False)
     
