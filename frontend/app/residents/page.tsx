@@ -2,6 +2,15 @@
 import Nav from '@/components/home/Nav'
 import Footer from '@/components/home/Footer'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { fetchData } from '@/services/httpMethods'
+
+interface NoticeType {
+    id: number
+    title: string
+    createdDate: string
+    description: string
+}
 
 const ResidentDashboard = () => {
     // Mock data - replace with actual API calls
@@ -20,15 +29,22 @@ const ResidentDashboard = () => {
         { label: 'Internal Notices', value: '10', icon: '📢', color: 'from-purple-500 to-pink-500' }
     ]
 
-    // fetch recent notices - 6 most recent
-    const recentNotices = [
-        { id: 1, title: 'Water Supply Interruption', description: 'There will be a water supply interruption due to maintenance work.', image_url: 'http://', date: '2024-06-15' },
-        { id: 2, title: 'Water Supply Interruption', description: 'There will be a water supply interruption due to maintenance work.', image_url: 'http://', date: '2024-06-15' },
-        { id: 3, title: 'Water Supply Interruption', description: 'There will be a water supply interruption due to maintenance work.', image_url: 'http://', date: '2024-06-15' },
-        { id: 4, title: 'Water Supply Interruption', description: 'There will be a water supply interruption due to maintenance work.', image_url: 'http://', date: '2024-06-15' },
-        { id: 5, title: 'Water Supply Interruption', description: 'There will be a water supply interruption due to maintenance work.', image_url: 'http://', date: '2024-06-15' },
-        { id: 6, title: 'Water Supply Interruption', description: 'There will be a water supply interruption due to maintenance work.', image_url: 'http://', date: '2024-06-15' },
-    ]
+    const [recentNotices, setRecentNotices] = useState<Array<{ id: number; title: string; date: string }>>([])
+
+    useEffect(() => {
+        const fetchNotices = async () => {
+            const res = await fetchData('/api/notices?type=private')
+            if (res.success && res.data) {
+                const notices = res.data.slice(0, 5).map((notice: NoticeType) => ({
+                    id: notice.id,
+                    title: notice.title,
+                    date: new Date(notice.createdDate).toLocaleDateString(),
+                }))
+                setRecentNotices(notices)
+            }
+        }
+        fetchNotices()
+    }, [])
 
     return (
         <>

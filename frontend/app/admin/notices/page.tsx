@@ -20,7 +20,7 @@ const Notices = () => {
 
     useEffect(() => {
         const fetchNotices = async () => {
-            const res = await fetchData('/api/notices')
+            const res = await fetchData('/api/notices?')
             if (res.success && res.data) {
                 setAllNotices(res.data)
             } else {

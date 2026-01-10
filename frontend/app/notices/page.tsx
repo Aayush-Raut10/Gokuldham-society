@@ -5,7 +5,7 @@ import { fetchData } from '@/services/httpMethods'
 
 const NoticePage = async () => {
 
-    const res = await fetchData('/api/notices')
+    const res = await fetchData('/api/notices?type=public')
 
     const notices = res.success && res.data ? res.data : []
 
