@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 const Hero = () => {
     return (
         <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-blue-50 to-indigo-100">
@@ -13,12 +15,12 @@ const Hero = () => {
                             Experience modern living with world-class amenities, peaceful surroundings, and a vibrant neighborhood.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg">
+                            <Link href="/residents" className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg">
                                 Resident Portal
-                            </button>
-                            <button className="px-8 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
+                            </Link>
+                            <Link href="#amenities" className="px-8 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">
                                 Explore Amenities
-                            </button>
+                            </Link>
                         </div>
                     </div>
                     <div className="hidden md:block">

@@ -7,15 +7,9 @@ import { useEffect, useState } from "react";
 const Notices = () => {
 
     const fetchNotices = async () => {
-        const result = localStorage.getItem('notices');
-        if (result) {
-            return JSON.parse(result);
-        }
-        else {
-            const res = await fetchData('/api/notices');
-            localStorage.setItem('notices', JSON.stringify(res));
-            return res;
-        }
+        const res = await fetchData('/api/notices?type=public');
+        localStorage.setItem('notices', JSON.stringify(res));
+        return res;
     }
 
     const [notices, setNotices] = useState<any[]>([]);

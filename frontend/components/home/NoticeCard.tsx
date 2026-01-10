@@ -14,7 +14,7 @@ type NoticeType = {
     category?: string;
 }
 
-const NoticeCard = ({ notice }: { notice: NoticeType }) => {
+const NoticeCard = ({ notice, is_private }: { notice: NoticeType, is_private?: boolean }) => {
     const [isHovered, setIsHovered] = useState(false)
 
     useEffect(() => {
@@ -73,13 +73,12 @@ const NoticeCard = ({ notice }: { notice: NoticeType }) => {
                 {/* Footer with CTA */}
                 <div className="pt-4 border-t border-gray-100">
                     <Link
-                        href={`/notices/${notice.id}`}
+                        href={`${is_private ? '/residents/notices/' : '/notices/'}${notice.id}`}
                         className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-all group/link"
                     >
                         <span>Read Full Notice</span>
                         <svg
-                            className={`w-4 h-4 transition-transform duration-300 ${isHovered ? 'translate-x-2' : ''
-                                }`}
+                            className={`w-4 h-4 transition-transform duration-300 ${isHovered ? 'translate-x-2' : ''}`} 
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"

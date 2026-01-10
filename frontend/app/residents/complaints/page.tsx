@@ -127,6 +127,7 @@ const Complaints = () => {
                                         </label>
                                         <textarea
                                             id="complaint"
+                                            name={"complaint"}
                                             value={complaint}
                                             onChange={(e) => setComplaint(e.target.value)}
                                             placeholder="Please provide detailed information about your complaint..."

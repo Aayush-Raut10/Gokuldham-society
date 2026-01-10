@@ -1,6 +1,7 @@
 'use client'
 import Footer from '@/components/home/Footer'
 import Nav from '@/components/home/Nav'
+import { fetchData } from '@/services/httpMethods'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -12,18 +13,17 @@ const NoticeDetails = () => {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const result = localStorage.getItem('notices')
-        if (result) {
-            const noticeData = JSON.parse(result) || []
-            if (!Array.isArray(noticeData)) {
-                setNotice(null)
-                setIsLoading(false)
-                return
+        // fetch notice details by id from API
+        const fetchNoticeDetails = async () => {
+            const res = await fetchData('/api/notices?type=private');
+            if (res.success && res.data) {
+                console.log(res);
+                const noticeData = res.data.find((n: any) => n.id?.toString() === params.id);
+                setNotice(noticeData || null);
             }
-            const noticeItem = noticeData.find((n: any) => n.id?.toString() === params.id)
-            setNotice(noticeItem || null)
+            setIsLoading(false);
         }
-        setIsLoading(false)
+        fetchNoticeDetails();
     }, [params.id])
 
     if (isLoading) {
@@ -55,7 +55,7 @@ const NoticeDetails = () => {
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">Notice Not Found</h2>
                         <p className="text-gray-600 mb-8">The notice you're looking for doesn't exist or has been removed.</p>
                         <button
-                            onClick={() => router.push('/notices')}
+                            onClick={() => router.push('/residents/notices')}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
                         >
                             Back to Notices
@@ -77,14 +77,14 @@ const NoticeDetails = () => {
                     {/* Breadcrumb */}
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-8">
                         <button
-                            onClick={() => router.push('/')}
+                            onClick={() => router.push('/residents')}
                             className="hover:text-blue-600 transition-colors"
                         >
                             Home
                         </button>
                         <span>/</span>
                         <button
-                            onClick={() => router.push('/notices')}
+                            onClick={() => router.push('/residents/notices')}
                             className="hover:text-blue-600 transition-colors"
                         >
                             Notices
@@ -168,7 +168,7 @@ const NoticeDetails = () => {
                     {/* Action Buttons */}
                     <div className="mt-12 flex flex-wrap gap-4">
                         <button
-                            onClick={() => router.push('/notices')}
+                            onClick={() => router.push('/residents/notices')}
                             className="px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
