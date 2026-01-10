@@ -52,3 +52,11 @@ class NoticesDb(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+class Complain(models.Model):
+        category = models.TextField(max_length=64)
+        description = models.TextField(max_length=500)
+
+        def __str__(self):
+            return self.category
