@@ -360,6 +360,7 @@ def visitor_api(request):
                     'name':newpass.name,
                     'contact':newpass.contact,
                     'purpose':newpass.purpose,
+                    'created_at':newpass.created_at,
                 }
             })
 
