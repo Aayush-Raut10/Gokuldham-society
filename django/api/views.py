@@ -23,11 +23,19 @@ def member_list_create(request):
     """
 
     if request.method == "GET":
-    
-        members = memberDb.objects.all().values()
-        members = list(members)
 
-        return JsonResponse(members, safe=False)
+        query = request.GET.get("search")
+
+        if query:
+            querymember = memberDb.objects.filter(full_name__icontains = query).values()
+            return JsonResponse(list(querymember), safe=False)
+
+        else:
+    
+            members = memberDb.objects.all().values()
+            members = list(members)
+
+            return JsonResponse(members, safe=False)
     
 
     elif request.method == "POST":
