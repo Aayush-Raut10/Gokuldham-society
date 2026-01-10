@@ -9,4 +9,5 @@ urlpatterns = [
     path('users', views.user_register, name="user-register-api"),
     path('notices', views.notice_api, name="notice-api"),
     path('flats', views.flat_api, name="flat-api"),
+    path('complains', views.complains_api, name="complain-api"),
 ]

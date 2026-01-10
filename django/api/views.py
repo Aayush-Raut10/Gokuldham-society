@@ -1,4 +1,4 @@
-from  api.models import memberDb, contactForm, UserDb, NoticesDb, FlatData
+from  api.models import memberDb, contactForm, UserDb, NoticesDb, FlatData, Complain
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -11,6 +11,8 @@ import string
 import datetime
 from django.core.files.storage import FileSystemStorage
 import os
+from django.shortcuts import get_object_or_404
+
 
 
 @csrf_exempt
@@ -301,7 +303,40 @@ def flat_api(request):
         return JsonResponse({'error':'Method not allowed'})
     
 
+@csrf_exempt
+def complains_api(request):
+    if request.method == "GET":
 
+        query = request.GET.get("id")
+
+    
+        if not query:
+         
+            complains = Complain.objects.all().values()
+            return JsonResponse(list(complains), safe=False)
+        
+        else:
+
+            member_instance = memberDb.objects.get(id=query)
+            complain = Complain.objects.filter(member=member_instance).values()
+            return JsonResponse(list(complain),safe=False)
+        
+
+    elif request.method == "POST":
+
+        data = json.loads(request.body)
+
+        category = data.get("category")
+        description = data.get("description")
+
+        member_instance = memberDb.objects.get(id=2)
+
+        newcomplain = Complain.objects.create(category=category, description=description, member=member_instance)
+
+        return JsonResponse({
+                'status':'success',
+                'message':'complain successfully added'
+            })
 
     
 

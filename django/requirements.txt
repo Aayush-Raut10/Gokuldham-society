@@ -1,0 +1,8 @@
+django
+python-decouple
+django-cors-headers
+json
+datetime
+random
+string
+os
