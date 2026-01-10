@@ -29,7 +29,7 @@ interface FetchedResidentData {
 
 interface VisitorData {
     name: string
-    phone: string
+    contact: string
     purpose: string
 }
 
@@ -39,10 +39,10 @@ interface VisitorPassResponse {
     data: {
         id: number
         name: string
-        phone: string
+        contact: string
         purpose: string
         pass_number: string
-        date_issued: string
+        created_at: string
         valid_until: string
     }
 }

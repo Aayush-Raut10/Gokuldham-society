@@ -7,7 +7,7 @@ import { submitForm } from '@/services/httpMethods'
 const VisitorPass = () => {
     const [formData, setFormData] = useState<VisitorData>({
         name: '',
-        phone: '',
+        contact: '',
         purpose: ''
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -30,14 +30,16 @@ const VisitorPass = () => {
         setError('')
 
         try {
-            const response = await submitForm(formData, '/api/visitors/')
+            const response = await submitForm(formData, '/api/visitors')
+
+            const d = response.data.data as VisitorPassResponse['data']
 
             if (response.success) {
-                setPassData(response.data)
+                setPassData(d)
                 // Reset form
                 setFormData({
                     name: '',
-                    phone: '',
+                    contact: '',
                     purpose: ''
                 })
             } else {
@@ -58,7 +60,7 @@ const VisitorPass = () => {
                 printWindow.document.write(`
                     <html>
                         <head>
-                            <title>Visitor Pass - ${passData?.pass_number}</title>
+                            <title>Visitor Pass - ${passData?.id}</title>
                             <style>
                                 body {
                                     font-family: Arial, sans-serif;
@@ -200,8 +202,8 @@ const VisitorPass = () => {
                                     <input
                                         type="tel"
                                         id="phone"
-                                        name="phone"
-                                        value={formData.phone}
+                                        name="contact"
+                                        value={formData.contact}
                                         onChange={handleChange}
                                         required
                                         placeholder="Enter 10-digit phone number"
@@ -300,7 +302,7 @@ const VisitorPass = () => {
                                     <h2 className="text-3xl font-bold text-blue-900 mb-2">🏢 Gokuldham Society</h2>
                                     <h3 className="text-2xl font-bold text-blue-700 mb-4">Visitor Pass</h3>
                                     <div className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full text-lg font-bold">
-                                        {passData.pass_number}
+                                        {passData.id}
                                     </div>
                                 </div>
 
@@ -312,7 +314,7 @@ const VisitorPass = () => {
 
                                     <div className="flex justify-between items-center p-4 bg-white rounded-xl border-l-4 border-blue-600">
                                         <span className="font-bold text-blue-900">Phone Number:</span>
-                                        <span className="text-gray-900 font-semibold">{passData.phone}</span>
+                                        <span className="text-gray-900 font-semibold">{passData.contact}</span>
                                     </div>
 
                                     <div className="flex flex-col p-4 bg-white rounded-xl border-l-4 border-blue-600">
@@ -323,7 +325,7 @@ const VisitorPass = () => {
                                     <div className="flex justify-between items-center p-4 bg-white rounded-xl border-l-4 border-green-600">
                                         <span className="font-bold text-green-900">Issued On:</span>
                                         <span className="text-gray-900 font-semibold">
-                                            {new Date(passData.date_issued).toLocaleString('en-IN', {
+                                            {new Date(passData.created_at).toLocaleString('en-IN', {
                                                 dateStyle: 'medium',
                                                 timeStyle: 'short'
                                             })}
@@ -333,10 +335,12 @@ const VisitorPass = () => {
                                     <div className="flex justify-between items-center p-4 bg-white rounded-xl border-l-4 border-orange-600">
                                         <span className="font-bold text-orange-900">Valid Until:</span>
                                         <span className="text-gray-900 font-semibold">
-                                            {new Date(passData.valid_until).toLocaleString('en-IN', {
-                                                dateStyle: 'medium',
-                                                timeStyle: 'short'
-                                            })}
+                                            {
+                                                new Date(new Date(passData.created_at).getTime() + 24 * 60 * 60 * 1000).toLocaleString('en-IN', {
+                                                    dateStyle: 'medium',
+                                                    timeStyle: 'short'
+                                                })
+                                            }
                                         </span>
                                     </div>
                                 </div>
