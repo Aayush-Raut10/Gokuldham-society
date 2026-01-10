@@ -2,7 +2,7 @@
 import AdminLayout from '@/components/admin/AdminLayout'
 import { Delete, Edit, Eye, Search } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_API || 'http://localhost:8000'
 
@@ -18,44 +18,42 @@ interface Resident {
 }
 
 const Residents = () => {
+    const [searchInput, setSearchInput] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
-    const [allResidents, setAllResidents] = useState<Resident[]>()
-
-    useEffect(() => {
-        const fetchResidents = async () => {
-            try {
-                const response = await fetch(`${BACKEND_API}/api/members`)
-                const data = await response.json()
-
-                setAllResidents(data)
-            }
-            catch (error) {
-                console.error('Error fetching residents:', error)
-            }
-        }
-
-        fetchResidents()
-    }, [])
-
-    // Filter residents based on search query
-    const filteredResidents = useMemo(() => {
-        if (!searchQuery.trim()) {
-            return allResidents
-        }
-
-        const query = searchQuery.toLowerCase().trim()
-        return allResidents?.filter(resident =>
-            resident.full_name.toLowerCase().includes(query) ||
-            resident.flat_id_id.toString().toLowerCase().includes(query) ||
-            resident.phone.includes(query) ||
-            resident.age.toString().toLowerCase().includes(query) ||
-            resident.joined_date.toLowerCase().includes(query) ||
-            resident.email.toLowerCase().includes(query)
-        ) || []
-    }, [searchQuery, allResidents])
+    const [residents, setResidents] = useState<Resident[]>([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [hasSearched, setHasSearched] = useState(false)
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value)
+        setSearchInput(e.target.value)
+    }
+
+    const handleSearch = async () => {
+        if (!searchInput.trim()) {
+            return
+        }
+
+        setSearchQuery(searchInput)
+        setIsLoading(true)
+        setHasSearched(true)
+
+        try {
+            const url = `${BACKEND_API}/api/members?search=${encodeURIComponent(searchInput)}`
+            const response = await fetch(url)
+            const data = await response.json()
+            setResidents(data)
+        } catch (error) {
+            console.error('Error fetching residents:', error)
+            setResidents([])
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch()
+        }
     }
 
     const deleteResident = async (residentId: number) => {
@@ -64,7 +62,7 @@ const Residents = () => {
                 method: 'DELETE'
             })
             if (response.ok) {
-                setAllResidents(prev => prev?.filter(resident => resident.id !== residentId))
+                setResidents(prev => prev?.filter(resident => resident.id !== residentId))
             } else {
                 console.error('Failed to delete resident')
             }
@@ -86,12 +84,12 @@ const Residents = () => {
         }
     }
 
-    if (!allResidents) {
+    if (isLoading) {
         return (
             <AdminLayout>
                 <div className="text-center py-20">
                     <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16 mx-auto"></div>
-                    <p className="text-gray-600 mt-4">Loading residents...</p>
+                    <p className="text-gray-600 mt-4">Searching...</p>
                 </div>
             </AdminLayout>
         )
@@ -119,20 +117,30 @@ const Residents = () => {
                             value={searchQuery}
                             onChange={handleSearchChange}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                            placeholder="Search by name, apartment number, contact, or email..."
+                            placeholder="Search by name..."
                         />
                     </div>
                     {searchQuery && (
                         <div className="mt-2 text-sm text-gray-600">
-                            Found {filteredResidents!.length} resident{filteredResidents!.length !== 1 ? 's' : ''}
-                            {searchQuery && ` matching "${searchQuery}"`}
+                            {isLoading ? (
+                                <span>Searching...</span>
+                            ) : (
+                                <>
+                                    Found {residents.length} resident{residents.length !== 1 ? 's' : ''}
+                                    {searchQuery && ` matching "${searchQuery}"`}
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
 
                 {/* Results Table */}
                 <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    {filteredResidents!.length === 0 ? (
+                    {isLoading ? (
+                        <div className="text-center py-12">
+                            <div className="text-gray-400 text-lg mb-2">Searching...</div>
+                        </div>
+                    ) : residents.length === 0 ? (
                         <div className="text-center py-12">
                             <div className="text-gray-400 text-lg mb-2">No residents found</div>
                             <div className="text-gray-500 text-sm">
@@ -155,7 +163,7 @@ const Residents = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {filteredResidents!.map((resident) => (
+                                    {residents.map((resident) => (
                                         <tr key={resident.id} className="hover:bg-gray-50">
                                             <td className="py-3 px-4 text-sm text-gray-900 font-medium">{resident.full_name}</td>
                                             <td className="py-3 px-4 text-sm text-gray-900">{resident.flat_id_id}</td>
@@ -206,9 +214,9 @@ const Residents = () => {
                 </div>
 
                 {/* Summary */}
-                {filteredResidents?.length! > 0 && (
+                {residents?.length > 0 && !searchQuery && (
                     <div className="mt-4 text-sm text-gray-600">
-                        Showing {filteredResidents?.length} of {allResidents.length} residents
+                        Showing {residents?.length} residents
                     </div>
                 )}
             </AdminLayout>
