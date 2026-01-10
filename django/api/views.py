@@ -355,7 +355,12 @@ def visitor_api(request):
             newpass = VisitorPass.objects.create(name=name, contact=contact, purpose=purpose)
             return JsonResponse({
                 'status':'success',
-                'message':'new visitor pass is created successfully'
+                'data':{
+                    'id':newpass.id,
+                    'name':newpass.name,
+                    'contact':newpass.contact,
+                    'purpose':newpass.purpose,
+                }
             })
 
     elif request.method == "GET":
