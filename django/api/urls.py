@@ -10,4 +10,5 @@ urlpatterns = [
     path('notices', views.notice_api, name="notice-api"),
     path('flats', views.flat_api, name="flat-api"),
     path('complains', views.complains_api, name="complain-api"),
+    path('visitors', views.visitor_api, name="visitors-api")
 ]
