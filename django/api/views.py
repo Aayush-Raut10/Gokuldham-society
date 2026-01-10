@@ -1,4 +1,4 @@
-from  api.models import memberDb, contactForm, UserDb, NoticesDb, FlatData, Complain
+from  api.models import memberDb, contactForm, UserDb, NoticesDb, FlatData, Complain, VisitorPass
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -340,5 +340,32 @@ def complains_api(request):
 
     
 
+@csrf_exempt
+def visitor_api(request):
 
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        name = data.get("name")
+        contact = data.get("contact")
+        purpose = data.get("purpose")
+
+        if name and contact and purpose:
+            newpass = VisitorPass.objects.create(name=name, contact=contact, purpose=purpose)
+            return JsonResponse({
+                'status':'success',
+                'message':'new visitor pass is created successfully'
+            })
+
+    elif request.method == "GET":
+
+        visitor_passes = VisitorPass.objects.all().values()
+
+        return JsonResponse(list(visitor_passes), safe=False)
+    
+    else:
+        return JsonResponse({
+            'error':'method not allowed.'
+        })
 
