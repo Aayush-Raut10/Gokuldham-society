@@ -30,26 +30,7 @@ const VisitorPass = () => {
         setError('')
 
         try {
-            // const response = await submitForm(formData, '/api/visitor-pass/')
-            // Mock response for demonstration
-            const response = await new Promise<VisitorPassResponse>((resolve) => {
-                setTimeout(() => {
-                    resolve({
-                        success: true, 
-                        message: 'Visitor pass generated successfully',
-                        data: {
-                            id: 1,
-                            pass_number: 'VP' + Math.floor(1000 + Math.random() * 9000).toString(),
-                            name: formData.name,
-                            phone: formData.phone,
-                            purpose: formData.purpose,
-                            date_issued: new Date().toISOString().split('T')[0],
-                            valid_until: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // valid for 24 hours
-
-                        }
-                    })
-                }, 1500)    
-            })
+            const response = await submitForm(formData, '/api/visitors/')
 
             if (response.success) {
                 setPassData(response.data)

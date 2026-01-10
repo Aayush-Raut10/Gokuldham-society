@@ -1,13 +1,16 @@
 import AdminLayout from '@/components/admin/AdminLayout'
+import { fetchData } from '@/services/httpMethods'
 import { Check, X } from 'lucide-react'
 
-const VisitorPass = () => {
+const VisitorPass = async () => {
 
-    const visitorPassData = [
-        { id: 1, name: 'John Doe', phone: '123-456-7890', date: '2024-06-20', purpose: 'Delivery', status: 'Approved' },
-        { id: 2, name: 'Jane Smith', phone: '987-654-3210', date: '2024-06-21', purpose: 'Maintenance', status: 'Pending' },
-        { id: 3, name: 'Mike Johnson', phone: '555-555-5555', date: '2024-06-22', purpose: 'Guest Visit', status: 'Rejected' },
-    ]
+    const res = await fetchData('/api/visitors')
+    let visitorPassData: any[] = []
+
+    if (res.success && res.data) {
+        visitorPassData = res.data
+        console.log('Visitor Pass data:', res.data)
+    }
 
     return (
         <AdminLayout>
@@ -24,6 +27,7 @@ const VisitorPass = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visitor Name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -35,6 +39,7 @@ const VisitorPass = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {visitorPassData.map((pass) => (
                                     <tr key={pass.id} className='hover:bg-gray-50'>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{pass.id}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{pass.name}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{pass.phone}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{pass.date}</td>
